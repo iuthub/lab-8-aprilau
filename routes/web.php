@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Factory;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +15,23 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::post('create', function (\Illuminate\Http\Request $request , \Illuminate\Validation\Factory $validator ) {
+$validation = $validator -> make( $request -> all (), [
+'title' => 'required|min:5',
+'content ' => 'required|min:10'
+]);
+if ($validation -> fails()) {
+return redirect()->back()->withErrors( $validation );
+}
+return redirect()->route('admin.index')->with('info', 'Post created, Title:'.$request->input('title'));
+})->name ('admin.create');
+
+Route::post('edit', function (\Illuminate\Http\Request $request ,\Illuminate\Validation\Factory $validator){$validation = $validator->make($request->all(),[
+'title' => 'required|min:5',
+'content' => 'required|min:10'
+]);
+if ($validation->fails()){
+return redirect()->back()->withErrors($validation);
+}
+return redirect()->route ('admin.index')->with ('info', 'Post edited, new Title:' . $request->input('title'));
+})-> name('admin.update');
